@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aircraft Timing Calculator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('https://www.turkishairlines.com/en-int/press-room/about-us/overview/_jcr_content/root/image.img.1920.2992.jpg/1653673023681.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+            color: #ffcc00;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #333;
+            color: #ffcc00;
+        }
+        td {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        input[type="time"], input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 5px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .buttons input {
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+        .calculate-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .clear-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .highlight {
+            background-color: red !important;
+            color: white !important;
+        }
+        @media (max-width: 768px) {
+            table, th, td {
+                font-size: 12px;
+            }
+            input[type="time"], input[type="number"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Aircraft Timing Calculator</h1>
+        <table>
+            <tr>
+                <th>Flight</th>
+                <th>SLT</th>
+                <th>ALT</th>
+                <th>GT</th>
+                <th>STD</th>
+                <th>ETD</th>
+                <th>SLOT</th>
+                <th>ETDS</th>
+                <th>TAXI</th>
+            </tr>
+            <tr>
+                <td>TK1794</td>
+                <td><input type="time" id="slt1" value="10:20"></td>
+                <td><input type="time" id="alt1"></td>
+                <td><input type="time" id="gt1" value="00:55"></td>
+                <td><input type="time" id="std1" readonly></td>
+                <td><input type="time" id="etd1" readonly></td>
+                <td><input type="time" id="slot1"></td>
+                <td><input type="time" id="etds1" readonly></td>
+                <td><input type="number" id="taxi1"></td>
+            </tr>
+            <tr>
+                <td>TK1790</td>
+                <td><input type="time" id="slt2" value="14:30"></td>
+                <td><input type="time" id="alt2"></td>
+                <td><input type="time" id="gt2" value="00:55"></td>
+                <td><input type="time" id="std2" readonly></td>
+                <td><input type="time" id="etd2" readonly></td>
+                <td><input type="time" id="slot2"></td>
+                <td><input type="time" id="etds2" readonly></td>
+                <td><input type="number" id="taxi2"></td>
+            </tr>
+            <tr>
+                <td>TK1796</td>
+                <td><input type="time" id="slt3" value="17:35"></td>
+                <td><input type="time" id="alt3"></td>
+                <td><input type="time" id="gt3" value="00:55"></td>
+                <td><input type="time" id="std3" readonly></td>
+                <td><input type="time" id="etd3" readonly></td>
+                <td><input type="time" id="slot3"></td>
+                <td><input type="time" id="etds3" readonly></td>
+                <td><input type="number" id="taxi3"></td>
+            </tr>
+        </table>
+        <div class="buttons">
+            <input type="button" value="Calculate" class="calculate-btn" onclick="calculateTimings()">
+            <input type="button" value="Clear" class="clear-btn" onclick="clearForm()">
+        </div>
+    </div>
+
+    <script>
+        function parseTime(timeString) {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return new Date(0, 0, 0, hours, minutes, 0);
+        }
+
+        function formatTime(date) {
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        function addMinutes(date, minutes) {
+            return new Date(date.getTime() + minutes * 60000);
+        }
+
+        function calculateTimings() {
+            const flights = [
+                { slt: 'slt1', alt: 'alt1', gt: 'gt1', std: 'std1', etd: 'etd1', slot: 'slot1', etds: 'etds1', taxi: 'taxi1' },
+                { slt: 'slt2', alt: 'alt2', gt: 'gt2', std: 'std2', etd: 'etd2', slot: 'slot2', etds: 'etds2', taxi: 'taxi2' },
+                { slt: 'slt3', alt: 'alt3', gt: 'gt3', std: 'std3', etd: 'etd3', slot: 'slot3', etds: 'etds3', taxi: 'taxi3' },
+            ];
+
+            flights.forEach(flight => {
+                const slt = parseTime(document.getElementById(flight.slt).value);
+                const alt = parseTime(document.getElementById(flight.alt).value || document.getElementById(flight.slt).value);
+                const gt = parseTime(document.getElementById(flight.gt).value);
+                const slot = parseTime(document.getElementById(flight.slot).value);
+                const taxi = parseInt(document.getElementById(flight.taxi).value) || 0;
+
+                const std = addMinutes(slt, gt.getHours() * 60 + gt.getMinutes());
+                document.getElementById(flight.std).value = formatTime(std);
+
+                const etd = alt > slt ? addMinutes(alt, gt.getHours() * 60 + gt.getMinutes()) : std;
+                document.getElementById(flight.etd).value = formatTime(etd);
+
+                const slotMinusTaxi = addMinutes(slot, -taxi);
+                const timeDiff = slotMinusTaxi - etd;
+                const oneHourInMs = 60 * 60 * 1000;
+
+                let etds;
+                if (timeDiff > oneHourInMs) {
+                    const adjustment = timeDiff / 2 - 5 * 60 * 1000;
+                    etds = new Date(etd.getTime() + adjustment);
+                } else {
+                    etds = etd;
+                }
+
+                const etdsElement = document.getElementById(flight.etds);
+                etdsElement.value = formatTime(etds);
+
+                if (Math.abs(slotMinusTaxi - etd) > oneHourInMs) {
+                    etdsElement.classList.add('highlight');
+                } else {
+                    etdsElement.classList.remove('highlight');
+                }
+            });
+        }
+
+        function clearForm() {
+            const flights = [
+                { slt: 'slt1', alt: 'alt1', gt: 'gt1', std: 'std1', etd: 'etd1', slot: 'slot1', etds: 'etds1', taxi: 'taxi1', defaultSLT: '10:20' },
+                { slt: 'slt2', alt: 'alt2', gt: 'gt2', std: 'std2', etd: 'etd2', slot: 'slot2', etds: 'etds2', taxi: 'taxi2', defaultSLT: '14:30' },
+                { slt: 'slt3', alt: 'alt3', gt: 'gt3', std: 'std3', etd: 'etd3', slot: 'slot3', etds: 'etds3', taxi: 'taxi3', defaultSLT: '17:35' },
+            ];
+
+            flights.forEach(flight => {
+                document.getElementById(flight.slt).value = flight.defaultSLT;
+                document.getElementById(flight.alt).value = '';
+                document.getElementById(flight.gt).value = '00:55';
+                document.getElementById(flight.std).value = '';
+                document.getElementById(flight.etd).value = '';
+                document.getElementById(flight.slot).value = '';
+                document.getElementById(flight.etds).value = '';
+                document.getElementById(flight.taxi).value = '';
+                document.getElementById(flight.etds).classList.remove('highlight');
+            });
+        }
+    </script>
+</body>
+</html>
